@@ -5,6 +5,35 @@ require('dotenv/config')
 
 const router = express.Router()
 
+router.get('/urls', async (req, res) => {
+    try {
+        const allVisitedUrls = [];
+        let visitedUrlsFrequency = []
+
+        const urls = await Url.find()
+
+        urls.forEach(element => {
+            allVisitedUrls.push(element.longUrl.split('//').pop().split('/')[0])
+        });
+
+        allVisitedUrls.forEach((singleUrl, index) => {
+            const found = visitedUrlsFrequency.find(url => {
+                url.url === singleUrl
+            })
+            if (found) {
+                // update count for URL
+            }
+            visitedUrlsFrequency.push({url: singleUrl, numberOfRequests: 1})
+        })
+
+        res.send(visitedUrlsFrequency)
+
+    } catch (error) {
+        console.error(error)
+        res.status(500)
+    }
+})
+
 router.get('/:code', async (req, res) => {
     try {
         const url = await Url.findOne({code: req.params.code})
